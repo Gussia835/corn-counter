@@ -3,9 +3,11 @@ import xml.etree.ElementTree as ET
 import cv2
 import os
 from typing import Optional, List
+import random
+import shutil
 
 
-def xml_parsing(file_path='annotations.xml'):
+def xml_parsing(file_path='corn-counter/annotations.xml'):
     '''
         Парсит xml-файла.
         Возвращает список изображений с полигонами.
@@ -49,8 +51,8 @@ def xml_parsing(file_path='annotations.xml'):
 
 
 def visualize_images(data_images: Optional[List],
-                     image_dir='dataset/images',
-                     output_dir='dataset/visualized_images'):
+                     image_dir='corn-counter/dataset/images',
+                     output_dir='corn-counter/dataset/visualized_images'):
     ''' Обводит зернышки на картинках.
         Cоздает картинки по пути output_dirs.
 
@@ -84,7 +86,7 @@ def visualize_images(data_images: Optional[List],
 
 
 def conv_in_yolo(data_images: Optional[List],
-                 output_dir='dataset/label'):
+                 output_dir='corn-counter/dataset/label'):
     '''Конвертация в yolo-формат для Yolo-модели.
 
         Обводит зернышки на картинках.
@@ -120,7 +122,56 @@ def conv_in_yolo(data_images: Optional[List],
             print(f'Создан файл: {label_path}')
 
 
+def split_dataset(images_dir='corn-counter/dataset/images',
+                  labels_dir='corn-counter/dataset/label',
+                  output_dir='corn-counter/dataset_split',
+                  train_ratio=0.8,
+                  val_ratio=0.1):
+    '''Разделение по соотношению 80-10-10 на train/val/test'''
+    os.makedirs(output_dir, exist_ok=True)
+
+    structure_folders = ['images/train', 'images/val', 'images/test',
+                         'labels/train', 'labels/val', 'labels/test']
+    for dir_folder in structure_folders:
+        os.makedirs(os.path.join(output_dir, dir_folder), exist_ok=True)
+
+    images_files = [f for f in os.listdir(images_dir) if f.endswith('.jpg')]
+    random.seed(42)
+    random.shuffle(images_files)
+
+    n_total = len(images_files)
+    n_train = int(n_total * train_ratio)
+    n_val = int(n_total * val_ratio)
+
+    train_files = images_files[:n_train] 
+    val_files = images_files[n_train:n_val]
+    test_files = images_files[n_train+n_val:]
+
+    for file_list, split in [(train_files, 'train'),
+                             (val_files, 'val'),
+                             (test_files, 'test')]:
+        for img_file in file_list:
+            file_path_src = os.path.join(images_dir,
+                                         f'{img_file}')
+            file_path_dst = os.path.join(output_dir,
+                                         'images',
+                                         split,
+                                         img_file)
+            shutil.copy(file_path_src, file_path_dst)
+
+            label_file = img_file.replace('.jpg', '.txt')
+            label_file_path_src = os.path.join(labels_dir,
+                                               label_file)
+            if os.path.exists(label_file_path_src):
+                label_file_path_dst = os.path.join(output_dir,
+                                                   'labels',
+                                                   split,
+                                                   label_file)
+                shutil.copy(label_file_path_src, label_file_path_dst)
+
+
 if __name__ == '__main__':
-    data = xml_parsing('annotations.xml')
+    data = xml_parsing('corn-counter/annotations.xml')
     visualize_images(data)
     conv_in_yolo(data)
+    split_dataset()
