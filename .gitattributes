@@ -1,10 +1,14 @@
-*.xml text
-*.txt text
-*.py text
-*.yaml text
-*.yml text
+# .gitattributes
+*.xml text eol=lf
+*.txt text eol=lf
+*.py text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+*.md text eol=lf
 
-# Бинарные файлы (если добавишь позже)
+# Бинарные файлы — не трогать!
 *.jpg binary
 *.png binary
 *.pt binary
+*.zip binary
+*.exe binary
