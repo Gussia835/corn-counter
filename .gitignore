@@ -175,6 +175,7 @@ __marimo__/
 corn-counter/dataset
 runs/
 *.jpg
+*.xml
 
 # Виртуальное окружение (в корне проекта)
 venv/
