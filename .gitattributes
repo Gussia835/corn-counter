@@ -5,8 +5,10 @@
 *.yml text eol=lf
 *.xml text eol=lf
 
-# Бинарные файлы — не трогать
+
+# Бинарные файлы
 *.jpg binary
 *.png binary
 *.pt binary
 *.zip binary
+*.exe binary

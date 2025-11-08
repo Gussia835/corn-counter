@@ -144,7 +144,7 @@ def split_dataset(images_dir='corn-counter/dataset/images',
     n_val = int(n_total * val_ratio)
 
     train_files = images_files[:n_train] 
-    val_files = images_files[n_train:n_val]
+    val_files = images_files[n_train:n_train+n_val]
     test_files = images_files[n_train+n_val:]
 
     for file_list, split in [(train_files, 'train'),
