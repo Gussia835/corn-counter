@@ -1,0 +1,10 @@
+*.xml text
+*.txt text
+*.py text
+*.yaml text
+*.yml text
+
+# Бинарные файлы (если добавишь позже)
+*.jpg binary
+*.png binary
+*.pt binary
