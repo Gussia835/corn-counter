@@ -172,9 +172,9 @@ marimo/_lsp/
 __marimo__/
 
 # Данные и результаты
-dataset/images/
-dataset/label/
-dataset/visualized_images/
+corn-counter/dataset/images/
+corn-counter/dataset/label/
+corn-counter/dataset/visualized_images/
 runs/
 
 # Виртуальное окружение (в корне проекта)
