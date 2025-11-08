@@ -56,7 +56,7 @@ def visualize_images(data_images: Optional[List],
     ''' Обводит зернышки на картинках.
         Cоздает картинки по пути output_dirs.
 
-        data_im: Данные картинок в форме словаря: 
+        data_im: Данные картинок в форме словаря:
                 {'name': name,
                 'width': width,
                 'height': height,
@@ -143,7 +143,7 @@ def split_dataset(images_dir='corn-counter/dataset/images',
     n_train = int(n_total * train_ratio)
     n_val = int(n_total * val_ratio)
 
-    train_files = images_files[:n_train] 
+    train_files = images_files[:n_train]
     val_files = images_files[n_train:n_train+n_val]
     test_files = images_files[n_train+n_val:]
 
