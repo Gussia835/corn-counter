@@ -1,5 +1,7 @@
+# In development on google colab. 
+
 # corn-counter
-Corn kernel detection and segmentation with **YOLOv8-seg**
+Corn kernel detection and segmentation with **YOLOv8-seg** and **CSRNet**. Also Hybrid
 
 Automated counting of threshed corn kernels on flat surfaces from images.  
 Challenges:
@@ -20,3 +22,5 @@ Challenges:
    ```bash
    python .\corn-counter\parser.py
    python python .\corn-counter\model.py
+
+
