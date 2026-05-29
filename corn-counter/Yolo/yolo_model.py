@@ -66,7 +66,7 @@ yaml_path = generate_yaml()
 
 result = model.train(
     data=yaml_path,
-    project=os.path.join(BASE_DIR, 'Yolo'),
+    project=os.path.join(PROJECT_ROOT, 'Yolo')
     name='corn_yolov8s',
     patience=10,
     epochs=40,
