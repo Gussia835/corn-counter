@@ -179,6 +179,7 @@ venv/
 
 # Логи
 logs/
+**/*.yaml
 
 # Временные файлы
 *.tmp
@@ -186,3 +187,7 @@ logs/
 
 # Скрипты (если они генерируются)
 *.pyc
+
+# датасет
+dataset_COCO_split/
+dataset_COCO/
