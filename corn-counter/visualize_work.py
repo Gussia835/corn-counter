@@ -17,7 +17,7 @@ DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
 def load_models():
-    print("Loading models...")
+    print("Loading models")
     yolo = YOLO(YOLO_WEIGHTS) if os.path.exists(YOLO_WEIGHTS) else None
     if not yolo:
         print("YOLO weights not found. YOLO prediction will be skipped.")
@@ -42,17 +42,44 @@ def run_visualization(img_path, yolo, csrnet):
 
     gt_path = img_path.replace('.jpg', '.txt')
     gt_count = 0
-    if os.path.exists(gt_path):
-        with open(gt_path, 'r') as f:
-            gt_count = sum(1 for line in f if line.strip())
+    
+    filename = os.path.basename(img_path)
+
+    labels_dir = os.path.join(BASE_DIR, 'dataset_COCO_split', 'labels', 'test') 
+    possible_labels_dirs = [
+        os.path.join(BASE_DIR, 'dataset_COCO_split', 'labels', 'test'),
+        os.path.join(BASE_DIR, 'dataset_COCO_split', 'labels', 'train'),
+        os.path.join(BASE_DIR, 'dataset_COCO_split', 'labels', 'val'),
+        os.path.join(BASE_DIR, 'dataset_COCO', 'labels') # На случай, если это исходная папка
+    ]
+
+    for dir_path in possible_labels_dirs:
+        gt_path = os.path.join(dir_path, filename.replace('.jpg', '.txt'))
+        if os.path.exists(gt_path):
+            try:
+                with open(gt_path, 'r') as f:
+                    gt_count = sum(1 for line in f if line.strip())
+                break
+            except Exception as e:
+                print(f"Error reading GT file {gt_path}: {e}")
+                
+    if gt_count == 0:
+        print(f'Warning: Ground Truth not found for {filename}. Checked in dataset_COCO_split/labels/')
 
     yolo_count = 0
     yolo_img = img_rgb.copy()
+    
     if yolo:
         res = yolo(img_path, conf=0.4, device=DEVICE, verbose=False)[0]
         if res.masks:
             yolo_count = len(res.masks.xy)
-            yolo_img = res.plot()
+            
+            masks = res.masks.xy
+            for mask in masks:
+                pts = np.array([mask], dtype=np.int32)
+                cv2.polylines(yolo_img, [pts], isClosed=True, color=(0, 255, 0), thickness=2)
+                
+            yolo_img = cv2.cvtColor(yolo_img, cv2.COLOR_BGR2RGB)
 
     csr_count = 0.0
     csr_heatmap = None
@@ -97,9 +124,16 @@ def run_visualization(img_path, yolo, csrnet):
     axes[3].grid(axis='y', linestyle='--', alpha=0.5)
 
     plt.tight_layout()
-    out_path = img_path.replace('.jpg', '_result.png')
-    plt.savefig(out_path, dpi=150)
-    print(f"Result saved to: {out_path}")
+    examples_dir = os.path.join(BASE_DIR, 'examples')
+    os.makedirs(examples_dir, exist_ok=True)
+    
+    
+    filename = os.path.basename(img_path)
+    out_filename = filename.replace('.jpg', '_result.png')
+    out_path = os.path.join(examples_dir, out_filename)
+    
+    plt.savefig(out_path, dpi=150, bbox_inches='tight')
+    print(f'Result saved to: {out_path}')
     plt.show()
 
 if __name__ == '__main__':
