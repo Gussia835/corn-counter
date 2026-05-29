@@ -74,13 +74,13 @@ Option B. All-in-one-command
 
     Visualizations: After running --visualize, images with masks, density maps, and count comparisons are saved in the examples/ folder.
     Training Plots: 
-        YOLO graphs are located in Yolo/corn_yolov8s/train/results.png.
-        CSRNet training loss/MAE plot is saved as CSRNet/csrnet_final_training_plot.png.
+        YOLO graphs are located in Yolo/corn_yolov8s/train/results.png | results/YOLO_graphics.png.
+        CSRNet training loss/MAE plot is saved as results/csrnet_plot.png.
     Benchmark Metrics: The --evaluate command prints a table with MAE and RMSE for YOLO, CSRNet, and 5 hybrid strategies directly to the console.
 
-**In folder examples/ you can see some predictions of models**
+**In folder "corn-counter/examples/" you can see some examples of model's predictions**
 
-**In folder results you can see graphics and results of comparing models**
+**In folder "results/" you can see graphics and results of comparing models**
 
 
 
