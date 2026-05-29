@@ -9,29 +9,53 @@ Automated counting of threshed corn kernels on flat surfaces using **YOLOv8-seg*
 
 ## 📁 Project Structure
 CORN-COUNTER/
+
 ├── corn-counter/
+
 │   ├── CSRNet/
+
 │   ├── dataset_COCO/
+
 │   ├── dataset_COCO_split/
+
 │   ├── examples/
+
 │   ├── Predictors/
+
 │   ├── Sources/
+
 │   ├── Yolo/
+
 │   ├── annotations.xml
+
 │   ├── file_manager.py
+
 │   ├── run.py
+
 │   ├── tester.py
+
 │   ├── visualize_work.py
+
 │   └── yolov8s-seg.pt
+
 ├── results/
+
 │   ├── YOLO_graphics.png
+
 │   ├── курсовая.docx
+
 │   └── курсовая.pdf
+
 ├── venv/
+
 ├── .gitattributes
+
 ├── .gitignore
+
 ├── LICENSE
+
 ├── README.md
+
 └── requirements.txt
 
 ## ▶️ Quick Start
