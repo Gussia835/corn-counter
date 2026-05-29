@@ -208,17 +208,24 @@ train_data = DataLoader(d_train, batch_size=BATCH_SIZE, shuffle=True, drop_last=
 
 val_loader_txt = DataLoader(d_val_txt_dataset, batch_size=1, shuffle=False, num_workers=2)
 
+print('Данные подготовлены')
+
 model = CSRNet().to(DEVICE)
 optim = torch.optim.Adam(model.parameters(), lr=LR)
 loss_func = combined_loss
 
 """Обучение"""
 
+import matplotlib.pyplot as plt
+
 if __name__ == '__main__':
     best_val_mae = float('inf')
     patience = 30
     patience_counter = 0
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optim, mode='min', factor=0.5, patience=10)
+    
+    train_losses = []
+    val_maes = []
 
     for epoch in range(EPOCHS):
         train_loss = 0
@@ -236,6 +243,7 @@ if __name__ == '__main__':
             train_loss += err.item()
 
         train_loss /= len(train_data)
+        train_losses.append(train_loss) 
 
         model.eval()
         val_mae_sum = 0.0
@@ -253,23 +261,55 @@ if __name__ == '__main__':
                 val_mae_sum += abs(pred_count - true_count)
 
         val_mae = val_mae_sum / len(val_loader_txt)
+        val_maes.append(val_mae)
+        
         avg_ratio = np.mean(scale_ratios) if scale_ratios else 1.0
 
-        print(f'Epoch {epoch}: Train Loss: {train_loss:.6f}, Val MAE: {val_mae:.2f} | Scale Ratio: {avg_ratio:.2f}')
+        print(f'Epoch {epoch+1}/{EPOCHS}: Train Loss: {train_loss:.6f}, Val MAE: {val_mae:.2f} | Scale Ratio: {avg_ratio:.2f}')
 
         if val_mae < best_val_mae:
             best_val_mae = val_mae
             patience_counter = 0
             os.makedirs(os.path.dirname(CSRNET_MODEL_PATH), exist_ok=True)
             torch.save(model.state_dict(), CSRNET_MODEL_PATH)
+            print(f'Saved best model with MAE: {best_val_mae:.2f}')
         else:
             patience_counter += 1
 
         scheduler.step(val_mae)
 
         if patience_counter >= patience:
-            print(f'Early stopping at epoch {epoch}')
-            break
+            print(f'Early stopping at epoch {epoch+1}')
+            break 
+
+    # ПОСТРОЕНИЕ ГРАФИКОВ
+    epochs_range = range(1, len(train_losses) + 1)
+
+    plt.figure(figsize=(12, 4))
+
+    plt.subplot(1, 2, 1)
+    plt.plot(epochs_range, train_losses, 'b-', label='Training Loss')
+    plt.title('Training Loss')
+    plt.xlabel('Epoch')
+    plt.ylabel('Loss')
+    plt.legend()
+    plt.grid(True)
+
+    plt.subplot(1, 2, 2)
+    plt.plot(epochs_range, val_maes, 'r-', label='Validation MAE')
+    plt.title('Validation MAE (Counting Error)')
+    plt.xlabel('Epoch')
+    plt.ylabel('MAE')
+    plt.legend()
+    plt.grid(True)
+
+    plt.tight_layout()
+    
+    plot_path = CSRNET_MODEL_PATH.replace('.pt', '_plot.png')
+    plt.savefig(plot_path)
+    print(f'Training plot saved to: {plot_path}')
+    
+    plt.show()
 
 import os
 density_files = os.listdir(DENSITY_TEST)
